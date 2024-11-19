@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reverse-proxy
+  labels:
+    app: reverse-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: reverse-proxy
+  template:
+    metadata:
+      labels:
+        app: reverse-proxy
+    spec:
+      containers:
+      - name: reverse-proxy
+        image: sriraghariharan/rmq-proxy-service:v1
+        ports:
+        - containerPort: 6000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: reverse-proxy-service
+  labels:
+    app: reverse-proxy
+spec:
+  selector:
+    app: reverse-proxy
+  ports:
+  - protocol: TCP
+    port: 6000 # External port
+    targetPort: 6000 # Port inside the container
+    nodePort: 30000 # Port accessible on Minikube
+  type: NodePort
